@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Product;
+
+class AdminController extends Controller
+{
+    public function index()
+{
+    return view('admin.dashboard')->with('success', 'Welcome, Admin!');
+}
+
+}
