@@ -5,7 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
+
 {
+
+
+    public function buy(Request $request)
+{
+    $user = auth()->user();
+
+    $price = $request->input('price');
+    $productName = $request->input('name');
+
+    if ($user->credit >= $price) {
+        $user->credit -= $price;
+        $user->save();
+
+        return back()->with('success', "You bought $productName successfully!");
+    } else {
+        return back()->with('error', "Not enough credit to buy $productName.");
+    }
+}
+
+
     public function miniTest()
     {
         $bill = [
@@ -35,7 +56,7 @@ class PageController extends Controller
             [
                 'name' => 'Headphones',
                 'image' => 'https://products.shureweb.eu/shure_product_db/product_main_images/files/c25/16a/40-/large_transparent/ce632827adec4e1842caa762f10e643d.png',
-                'price' => 1200,
+                'price' => 1000,
                 'description' => 'Noise-cancelling wireless headphones.'
             ],
         ];

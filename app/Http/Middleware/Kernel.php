@@ -33,4 +33,5 @@ class Kernel extends HttpKernel
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
         
     ];
+    
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\AdminController;
 
+use App\Http\Controllers\PurchaseController;
 
 Route::view('/', 'welcome');
 
@@ -37,10 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('/products', AdminProductController::class);
-});
+// Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->group(function () {
+//     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+//     Route::resource('/products', AdminProductController::class);
+// });
 
 
 Route::get('/make-admin', function () {
@@ -52,3 +53,36 @@ Route::get('/make-admin', function () {
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/minitest', [PageController::class, 'miniTest']);
+Auth::routes(); 
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/minitest', [PageController::class, 'miniTest']);
+    Route::post('/buy', [PageController::class, 'buy'])->name('buy')->middleware('auth');
+
+});
+Route::post('/buy', [PurchaseController::class, 'buy'])->name('buy')->middleware('auth');
+Route::post('/add-balance', [App\Http\Controllers\UserController::class, 'addBalance'])->name('add.balance');
+
+
+Route::post('/add-balance', [UserController::class, 'addBalance'])->name('add.balance');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index']);
+});
+
+Route::middleware(['auth', 'role:employee'])->group(function () {
+    Route::get('/employee/dashboard', [EmployeeController::class, 'index']);
+});
+
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/shop', [ShopController::class, 'index']);
+});
+
+Route::middleware(['auth', 'role:admin,employee'])->group(function () {
+    Route::get('/staff-area', [StaffController::class, 'index']);
+});
+Route::middleware(['auth', 'role:employee'])->prefix('employee')->group(function () {
+    Route::resource('/products', EmployeeProductController::class);
+});

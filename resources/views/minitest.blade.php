@@ -1,6 +1,10 @@
 {{-- resources/views/minitest.blade.php --}}
 @extends('layouts.master')
+@extends('layouts.app')
 
+@section('content')
+@extends('layouts.master')
+@section('title', 'Products')
 @section('title', 'MiniTest Supermarket Bill')
 
 @section('content')
