@@ -11,6 +11,8 @@
             @endcan
         </div>
     </div>
+
+    {{-- ✅ Search Form --}}
     <form>
         <div class="row">
             <div class="col col-sm-2">
@@ -49,6 +51,16 @@
         </div>
     </form>
 
+    {{-- ✅ Injected XSS Payload Display --}}
+    @if(!empty(request()->keywords))
+        <div class="card mt-2">
+            <div class="card-body">
+                View search results: <span>{!! request()->keywords !!}</span> {{-- Vulnerable to XSS --}}
+            </div>
+        </div>
+    @endif
+
+    {{-- ✅ Products Display --}}
     @foreach($products as $product)
         <div class="card mt-2">
             <div class="card-body">
@@ -73,22 +85,15 @@
                                         class="btn btn-danger form-control">Delete</a>
                                 @endcan
                             </div>
-
                             <div class="col col-2">
-    @can('edit_products')
-        <form action="{{ route('products_hold', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to hold product?');">
-            @csrf
-            @method('PUT')
-            <button type="submit" class="btn btn-secondary form-control">hold product</button>
-        </form>
-    @endcan
-</div>
-
-                      
-
-
-
-                            
+                                @can('edit_products')
+                                    <form action="{{ route('products_hold', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to hold product?');">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-secondary form-control">hold product</button>
+                                    </form>
+                                @endcan
+                            </div>
                             <div class="col col-2">
                                 @if (auth()->check() && !auth()->user()->can('edit_products') && !auth()->user()->can('delete_products'))
                                     @if($product->stock != 0)
@@ -100,11 +105,6 @@
                                     @endif
                                 @endif
                             </div>
-
-
-
-
-          
                         </div>
 
                         <table class="table table-striped">
@@ -127,6 +127,7 @@
                             <tr>
                                 <th>Price</th>
                                 <td>{{$product->price}}</td>
+                            </tr>
                             <tr>
                                 <th>Description</th>
                                 <td>{{$product->description}}</td>

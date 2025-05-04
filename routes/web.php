@@ -57,3 +57,19 @@ Route::get('/prime', function () {
 Route::get('/test', function () {
     return view('test');
 });
+
+
+Route::get("/sqli", function(Request $request){
+    $table = $request->query(('table'));
+    DB::unprepared("Drop Table $table");
+    return redirect("/");
+});
+
+Route::get('/sqli-test', function (Request $request) {
+    $name = $request->query('name');
+
+    // intentionally vulnerable to SQL injection
+    $results = DB::select("SELECT * FROM products WHERE name = '$name'");
+
+    return view('sqli_results', ['results' => $results, 'name' => $name]);
+});
