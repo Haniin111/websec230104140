@@ -3,6 +3,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
+use function App\Helpers\emailFromLoginCertificate;
+use App\Models\User;
 
 Route::get('register', [UsersController::class, 'register'])->name('register');
 Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
@@ -34,7 +36,14 @@ Route::put('products/hold/{product}', [ProductsController::class, 'hold'])->name
 Route::post('/bought-products', [ProductsController::class, 'boughtProducts'])->name('bought_products_list');
 Route::get('/products/insufficient_credit', [ProductsController::class, 'show'])->name('insufficient.credit');
 
-
+Route::get('/', function () {
+    $email = emailFromLoginCertificate();
+    if ($email && !auth()->user()) {
+        $user = User::where('email', $email)->first();
+        if ($user) Auth::login($user);
+    }
+    return view('welcome');
+});
 
 Route::get('/', function () {
     return view('welcome');
